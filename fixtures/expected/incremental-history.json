@@ -1,0 +1,12 @@
+[
+  {
+    "id": "pdf.metadata.software@p0#0",
+    "severity": "low",
+    "evidence": "Info/Producer: Fictional Signer 1.0"
+  },
+  {
+    "id": "pdf.revisions.history@p0#0",
+    "severity": "low",
+    "evidence": "2 versions; earlier ones end at bytes 809"
+  }
+]

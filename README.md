@@ -23,7 +23,9 @@ pdf.js gets a custom data loader that reads fonts, cmaps and wasm only from loca
   - [x] [annotations and forms](docs/pdf-annotations.md): unapplied redactions (shows the text underneath), comments, hidden and filled form fields
   - [x] [hidden text](docs/pdf-hidden-text.md): white-on-white, invisible mode, transparent, tiny, off-page, under an image; OCR layers recognised
   - [x] Golden-JSON tests, malformed-PDF fuzzing, no-network test, license check
-- [ ] **P2** Covered text (black boxes) + incremental-update (old revisions) detectors
+- [x] **P2** The two hardest leaks
+  - [x] [covered text](docs/pdf-covered-text.md): text under black or white boxes, thick bars, annotation boxes and boxes on scanned pages; checked per glyph
+  - [x] [earlier versions](docs/pdf-revisions.md): deleted text, comments and old properties recovered from incremental updates
 - [ ] **P3** DOCX + image detectors
 - [ ] **P4** Cleaner + automatic re-scan
 - [ ] **P5** CLI polish, JSON/HTML reports, exit codes

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "pdf.covered-text@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "000-12-3456"
+  },
+  {
+    "id": "pdf.covered-text@p1#1",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Salary: 87,500 (FAKE)"
+  },
+  {
+    "id": "pdf.covered-text@p1#2",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Home address: 1 Fictional Way"
+  },
+  {
+    "id": "pdf.covered-text@p1#3",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Medical note line one: FAKE condition A\nMedical note line two: FAKE medication B"
+  },
+  {
+    "id": "pdf.covered-text@p1#4",
+    "severity": "high",
+    "page": 1,
+    "evidence": "99-FAKE"
+  },
+  {
+    "id": "pdf.covered-text@p1#5",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Phone: 555-0199 (FAKE)"
+  },
+  {
+    "id": "pdf.hidden-text.ocr-layer@p0#0",
+    "severity": "info",
+    "evidence": "Pages: 1"
+  }
+]

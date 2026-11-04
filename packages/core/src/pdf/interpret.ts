@@ -21,6 +21,8 @@ export interface TextRun {
   height: number;
   /** Annotation id when the text belongs to an annotation appearance. */
   annotation: string | null;
+  /** Per-glyph text and box, for partial-coverage checks. */
+  glyphs: { text: string; bbox: BBox }[];
 }
 
 export type PaintKind = 'fill' | 'stroke' | 'image' | 'image-mask' | 'shading';
@@ -33,7 +35,14 @@ export interface Paint {
   alpha: number;
   /** For fills: path is an axis-aligned rectangle. */
   isRect: boolean;
+  /** Line width in page points (CTM applied). */
   lineWidth: number;
+  /** For strokes: the path is a single straight line (a "bar"). */
+  isLine: boolean;
+  /** Normal (source-over) blending; multiply etc. leave text visible. */
+  blendNormal: boolean;
+  /** A soft mask is active, so opacity is unknown. */
+  softMask: boolean;
   annotation: string | null;
 }
 
@@ -59,6 +68,8 @@ interface GState {
   fillAlpha: number;
   strokeAlpha: number;
   lineWidth: number;
+  blendNormal: boolean;
+  softMask: boolean;
   // text state (part of the graphics state in PDF)
   font: string | null;
   fontSize: number;
@@ -80,6 +91,8 @@ function initialState(): GState {
     fillAlpha: 1,
     strokeAlpha: 1,
     lineWidth: 1,
+    blendNormal: true,
+    softMask: false,
     font: null,
     fontSize: 0,
     charSpacing: 0,
@@ -139,6 +152,7 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
     const scale = fontScale(gs.font);
     let text = '';
     let box: BBox | null = null;
+    const glyphs: { text: string; bbox: BBox }[] = [];
     for (const item of items) {
       if (typeof item === 'number') {
         // TJ spacing, thousandths of text space.
@@ -155,6 +169,7 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
       const gb = transformBox(trm, [0, -0.2, w0, 0.8]);
       box = box ? union(box, gb) : gb;
       text += g.unicode ?? '';
+      glyphs.push({ text: g.unicode ?? '', bbox: gb });
       tm = mul([1, 0, 0, 1, adv, 0], tm);
     }
     if (!box || text.length === 0) return;
@@ -169,6 +184,7 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
       renderMode: gs.renderMode,
       height,
       annotation,
+      glyphs,
     });
   };
 
@@ -186,7 +202,10 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
       color: kind === 'stroke' ? gs.stroke : gs.fill,
       alpha: kind === 'stroke' ? gs.strokeAlpha : gs.fillAlpha,
       isRect: false,
-      lineWidth: gs.lineWidth,
+      isLine: false,
+      lineWidth: gs.lineWidth * Math.sqrt(Math.abs(gs.ctm[0] * gs.ctm[3] - gs.ctm[1] * gs.ctm[2])),
+      blendNormal: gs.blendNormal,
+      softMask: gs.softMask,
       annotation,
       ...extra,
     });
@@ -220,6 +239,10 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
           if (k === 'ca' && typeof v === 'number') gs.fillAlpha = v;
           else if (k === 'CA' && typeof v === 'number') gs.strokeAlpha = v;
           else if (k === 'LW' && typeof v === 'number') gs.lineWidth = v;
+          else if (k === 'BM') {
+            const bm = String(v).toLowerCase();
+            gs.blendNormal = bm === 'source-over' || bm === 'normal' || bm === 'compatible';
+          } else if (k === 'SMask') gs.softMask = !!v && v !== 'None';
           else if (k === 'Font' && Array.isArray(v)) {
             gs.font = String(v[0]);
             gs.fontSize = Number(v[1]) || 0;
@@ -331,7 +354,9 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
         if (isFill) addPaint('fill', local, { isRect: isAxisRect(data, gs.ctm) });
         else if (isStroke) {
           const hw = gs.lineWidth / 2;
-          addPaint('stroke', [local[0] - hw, local[1] - hw, local[2] + hw, local[3] + hw]);
+          addPaint('stroke', [local[0] - hw, local[1] - hw, local[2] + hw, local[3] + hw], {
+            isLine: isStraightLine(data),
+          });
         }
         break;
       }
@@ -430,4 +455,21 @@ function isAxisRect(data: ArrayLike<number> | undefined, ctm: Matrix): boolean {
     if (Math.abs(a[0] - b[0]) > 1e-6 && Math.abs(a[1] - b[1]) > 1e-6) return false;
   }
   return true;
+}
+
+/** True when the path is one straight segment (moveTo + lineTo). */
+function isStraightLine(data: ArrayLike<number> | undefined): boolean {
+  if (!data) return false;
+  let lines = 0;
+  let i = 0;
+  while (i < data.length) {
+    const op = data[i];
+    if (op === 0)
+      i += 3; // repeated moveTo is harmless
+    else if (op === 1) {
+      lines++;
+      i += 3;
+    } else return false;
+  }
+  return lines === 1;
 }

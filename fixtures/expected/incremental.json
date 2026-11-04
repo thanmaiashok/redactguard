@@ -1,0 +1,27 @@
+[
+  {
+    "id": "pdf.revisions.removed-text@p0#0",
+    "severity": "high",
+    "evidence": "Confidential: acquisition of Fictional Corp for 40M (FAKE)"
+  },
+  {
+    "id": "pdf.metadata.author@p0#0",
+    "severity": "medium",
+    "evidence": "Info/Author: Press Office"
+  },
+  {
+    "id": "pdf.revisions.old-metadata@p0#0",
+    "severity": "medium",
+    "evidence": "Author: Jordan Example\nTitle: Board minutes - CONFIDENTIAL draft"
+  },
+  {
+    "id": "pdf.revisions.removed-comment@p0#0",
+    "severity": "medium",
+    "evidence": "Do not share the price (FAKE)"
+  },
+  {
+    "id": "pdf.metadata.title@p0#0",
+    "severity": "low",
+    "evidence": "Info/Title: Board minutes"
+  }
+]

@@ -8,9 +8,12 @@ import { fileURLToPath } from 'node:url';
 import { createCanvas } from '@napi-rs/canvas';
 import {
   AnnotationFlags,
+  BlendMode,
+  PDFDict,
   PDFDocument,
   PDFHexString,
   PDFName,
+  PDFRef,
   PDFString,
   StandardFonts,
   popGraphicsState,
@@ -224,6 +227,174 @@ async function unappliedRedactionPdf() {
   return save(doc);
 }
 
+async function blackBoxPdf() {
+  const { doc, page, font } = await newDoc();
+  const at = (text: string, x: number, y: number) => page.drawText(text, { x, y, size: 12, font });
+  page.drawText('Employee record (synthetic test document)', { x: 50, y: 740, size: 14, font });
+
+  // 1. Black box over just part of a line.
+  const prefix = 'Name: Casey Placeholder   SSN: ';
+  const ssn = '000-12-3456';
+  at(`${prefix}${ssn}   Dept: Testing`, 50, 700);
+  const x0 = 50 + font.widthOfTextAtSize(prefix, 12);
+  page.drawRectangle({
+    x: x0 - 2,
+    y: 696,
+    width: font.widthOfTextAtSize(ssn, 12) + 4,
+    height: 16,
+    color: rgb(0, 0, 0),
+  });
+
+  // 2. "Whiteout": a white box over a whole line.
+  at('Salary: 87,500 (FAKE)', 50, 670);
+  page.drawRectangle({ x: 45, y: 665, width: 200, height: 20, color: rgb(1, 1, 1) });
+
+  // 3. A thick black line used as a bar.
+  at('Home address: 1 Fictional Way', 50, 640);
+  page.drawLine({
+    start: { x: 48, y: 644 },
+    end: { x: 250, y: 644 },
+    thickness: 14,
+    color: rgb(0, 0, 0),
+  });
+
+  // 4. A filled Square annotation (comment tool) over text.
+  at('Phone: 555-0199 (FAKE)', 50, 610);
+  const sq = doc.context.obj({
+    Type: 'Annot',
+    Subtype: 'Square',
+    Rect: [48, 605, 190, 623],
+    IC: [0, 0, 0],
+    C: [0, 0, 0],
+  });
+  page.node.addAnnot(doc.context.register(sq));
+
+  // 5. One box over two lines.
+  at('Medical note line one: FAKE condition A', 50, 580);
+  at('Medical note line two: FAKE medication B', 50, 566);
+  page.drawRectangle({ x: 45, y: 561, width: 300, height: 33, color: rgb(0, 0, 0) });
+
+  // 6. A scan with an OCR layer, then a black box drawn on the scan.
+  const scan = await doc.embedPng(pngBlock(400, 40, 'SCAN: Patient ID 99-FAKE', '#ffffff'));
+  page.drawImage(scan, { x: 45, y: 500, width: 400, height: 40 });
+  page.pushOperators(pushGraphicsState(), setTextRenderingMode(TextRenderingMode.Invisible));
+  page.drawText('SCAN: Patient ID', { x: 53, y: 512, size: 18, font });
+  page.drawText('99-FAKE', { x: 260, y: 512, size: 18, font });
+  page.pushOperators(popGraphicsState());
+  page.drawRectangle({ x: 255, y: 505, width: 90, height: 28, color: rgb(0, 0, 0) });
+
+  // Negative controls: still visible, must NOT be flagged.
+  at('Highlighted but visible', 50, 450);
+  page.drawRectangle({
+    x: 45,
+    y: 445,
+    width: 160,
+    height: 18,
+    color: rgb(1, 1, 0),
+    blendMode: BlendMode.Multiply,
+  });
+  at('Behind tinted glass', 50, 420);
+  page.drawRectangle({ x: 45, y: 415, width: 160, height: 18, color: rgb(0, 0, 0), opacity: 0.3 });
+  return save(doc);
+}
+
+/**
+ * Appends a hand-written incremental update (what "Save" does in Acrobat):
+ * new versions of objects + a new xref section pointing back with /Prev.
+ */
+function appendUpdate(
+  base: Uint8Array,
+  objects: { num: number; body: string }[],
+  trailer: { size: number; root: string; info?: string },
+): Uint8Array {
+  const baseStr = Buffer.from(base).toString('latin1');
+  const prev = [...baseStr.matchAll(/startxref\s+(\d+)/g)].pop()?.[1];
+  if (!prev) throw new Error('base PDF has no startxref');
+  let out = baseStr.endsWith('\n') ? baseStr : baseStr + '\n';
+  const offsets: [number, number][] = [];
+  for (const o of objects) {
+    offsets.push([o.num, Buffer.byteLength(out, 'latin1')]);
+    out += `${o.num} 0 obj\n${o.body}\nendobj\n`;
+  }
+  const xrefAt = Buffer.byteLength(out, 'latin1');
+  out += 'xref\n0 1\n0000000000 65535 f \n';
+  for (const [num, off] of offsets.sort((a, b) => a[0] - b[0])) {
+    out += `${num} 1\n${String(off).padStart(10, '0')} 00000 n \n`;
+  }
+  out += `trailer\n<< /Size ${trailer.size} /Root ${trailer.root}${trailer.info ? ` /Info ${trailer.info}` : ''} /Prev ${prev} >>\n`;
+  out += `startxref\n${xrefAt}\n%%EOF\n`;
+  return new Uint8Array(Buffer.from(out, 'latin1'));
+}
+
+const pdfStr = (s: string) => `(${s.replace(/[\\()]/g, (c) => '\\' + c)})`;
+
+async function incrementalPdf() {
+  const { doc, page, font } = await newDoc();
+  doc.setTitle('Board minutes - CONFIDENTIAL draft');
+  doc.setAuthor('Jordan Example');
+  page.drawText('Board minutes (synthetic test document)', { x: 50, y: 740, size: 14, font });
+  page.drawText('Confidential: acquisition of Fictional Corp for 40M (FAKE)', {
+    x: 50,
+    y: 700,
+    size: 12,
+    font,
+  });
+  page.drawText('Next meeting: Monday', { x: 50, y: 680, size: 12, font });
+  const note = doc.context.obj({
+    Type: 'Annot',
+    Subtype: 'Text',
+    Rect: [400, 690, 420, 710],
+    Contents: PDFHexString.fromText('Do not share the price (FAKE)'),
+    T: PDFHexString.fromText('Jordan Example'),
+  });
+  page.node.addAnnot(doc.context.register(note));
+  const base = await save(doc);
+
+  // Version 2: the confidential line and the comment are "deleted", author changed.
+  const fontDict = page.node.Resources()!.lookup(PDFName.of('Font'), PDFDict);
+  const fontKey = fontDict.keys()[0]!.toString(); // e.g. "/F1-0123"
+  const line = (t: string, size: number, y: number) =>
+    `BT ${fontKey} ${size} Tf 50 ${y} Td ${font.encodeText(t).toString()} Tj ET`;
+  const content = [
+    line('Board minutes (synthetic test document)', 14, 740),
+    line('Next meeting: Monday', 12, 680),
+  ].join('\n');
+  const next = doc.context.largestObjectNumber + 1;
+  const pageDict = page.node.clone();
+  pageDict.delete(PDFName.of('Annots'));
+  pageDict.set(PDFName.of('Contents'), PDFRef.of(next));
+  const pageBody = pageDict.toString();
+  return appendUpdate(
+    base,
+    [
+      { num: next, body: `<< /Length ${content.length} >>\nstream\n${content}\nendstream` },
+      { num: page.ref.objectNumber, body: pageBody },
+      {
+        num: next + 1,
+        body: `<< /Title ${pdfStr('Board minutes')} /Author ${pdfStr('Press Office')} >>`,
+      },
+    ],
+    { size: next + 2, root: doc.context.trailerInfo.Root!.toString(), info: `${next + 1} 0 R` },
+  );
+}
+
+/** An incremental update that changes nothing visible: only the history is there. */
+async function incrementalHistoryPdf() {
+  const { doc, page, font } = await newDoc();
+  page.drawText('Signed form (synthetic test document)', { x: 50, y: 740, size: 14, font });
+  const base = await save(doc);
+  const next = doc.context.largestObjectNumber + 1;
+  return appendUpdate(
+    base,
+    [{ num: next, body: `<< /Producer ${pdfStr('Fictional Signer 1.0')} >>` }],
+    {
+      size: next + 1,
+      root: doc.context.trailerInfo.Root!.toString(),
+      info: `${next} 0 R`,
+    },
+  );
+}
+
 export const FIXTURES: Record<string, () => Promise<Uint8Array>> = {
   'clean.pdf': cleanPdf,
   'metadata.pdf': metadataPdf,
@@ -231,6 +402,9 @@ export const FIXTURES: Record<string, () => Promise<Uint8Array>> = {
   'ocr-scan.pdf': ocrScanPdf,
   'annotations.pdf': annotationsPdf,
   'unapplied-redaction.pdf': unappliedRedactionPdf,
+  'black-box.pdf': blackBoxPdf,
+  'incremental.pdf': incrementalPdf,
+  'incremental-history.pdf': incrementalHistoryPdf,
 };
 
 export async function generateFixtures(outDir = FIXTURE_DIR): Promise<string[]> {

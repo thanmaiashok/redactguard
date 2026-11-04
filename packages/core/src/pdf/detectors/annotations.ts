@@ -4,7 +4,7 @@ import { FindingSink, coverage, intersect, area, truncate, union } from '../../u
 import type { PageModel } from '../interpret.js';
 import { joinRuns } from './text-join.js';
 
-interface AnnotData {
+export interface AnnotData {
   id?: string;
   subtype?: string;
   annotationType?: number;
@@ -64,17 +64,15 @@ function quadBoxes(q: ArrayLike<number> | null | undefined): BBox[] {
   return out;
 }
 
-export async function detectAnnotations(
-  page: PDFPageProxy,
-  model: PageModel,
-  sink: FindingSink,
-): Promise<void> {
-  let annots: AnnotData[];
+export async function loadAnnotations(page: PDFPageProxy): Promise<AnnotData[]> {
   try {
-    annots = (await page.getAnnotations({ intent: 'display' })) as AnnotData[];
+    return (await page.getAnnotations({ intent: 'display' })) as AnnotData[];
   } catch {
-    return;
+    return [];
   }
+}
+
+export function detectAnnotations(annots: AnnotData[], model: PageModel, sink: FindingSink): void {
   const pageNo = model.pageNumber;
   for (const a of annots) {
     const subtype = a.subtype ?? '';

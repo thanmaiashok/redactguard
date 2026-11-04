@@ -1,6 +1,8 @@
 import type { ScanReport } from '../types.js';
 import { FindingSink, countSeverities, sortFindings } from '../util.js';
-import { detectAnnotations } from './detectors/annotations.js';
+import { detectAnnotations, loadAnnotations } from './detectors/annotations.js';
+import { detectCoveredText } from './detectors/covered-text.js';
+import { detectRevisions } from './detectors/revisions.js';
 import { detectHiddenText } from './detectors/hidden-text.js';
 import { detectMetadata } from './detectors/metadata.js';
 import { buildPageModel } from './interpret.js';
@@ -18,14 +20,27 @@ export async function scanPdf(bytes: Uint8Array, file: string): Promise<ScanRepo
       try {
         const page = await pdf.doc.getPage(n);
         const model = await buildPageModel(pdf, page);
-        if (detectHiddenText(model, sink).ocrLayer) ocrPages.push(n);
-        await detectAnnotations(page, model, sink);
+        const annots = await loadAnnotations(page);
+        // Redaction marks are reported by the annotations detector, not as covering boxes.
+        const redactIds = new Set(
+          annots.filter((a) => a.subtype === 'Redact').map((a) => String(a.id)),
+        );
+        const { coveredRuns } = detectCoveredText(model, sink, redactIds);
+        if (detectHiddenText(model, sink, coveredRuns).ocrLayer) ocrPages.push(n);
+        detectAnnotations(annots, model, sink);
         page.cleanup();
       } catch (err) {
         warnings.push(
           `Page ${n} could not be fully analysed: ${(err as Error)?.message ?? String(err)}`,
         );
       }
+    }
+    try {
+      await detectRevisions(pdf, sink, warnings);
+    } catch (err) {
+      warnings.push(
+        `Earlier versions could not be checked: ${(err as Error)?.message ?? String(err)}`,
+      );
     }
     if (ocrPages.length) {
       sink.add({

@@ -102,7 +102,11 @@ function backgroundOf(t: TextRun, paints: Paint[]): RGB | 'unknown' {
   return WHITE;
 }
 
-export function detectHiddenText(model: PageModel, sink: FindingSink): HiddenTextResult {
+export function detectHiddenText(
+  model: PageModel,
+  sink: FindingSink,
+  skip: Set<TextRun> = new Set(),
+): HiddenTextResult {
   const runs = model.texts.filter((t) => t.annotation === null);
   let ocrLayer = false;
   let group: TextRun[] = [];
@@ -136,6 +140,10 @@ export function detectHiddenText(model: PageModel, sink: FindingSink): HiddenTex
   };
 
   for (const t of runs) {
+    if (skip.has(t)) {
+      flush();
+      continue;
+    }
     const reason = classifyRun(t, model);
     if (reason === 'ocr') {
       ocrLayer = true;
