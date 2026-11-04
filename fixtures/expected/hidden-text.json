@@ -1,0 +1,38 @@
+[
+  {
+    "id": "pdf.hidden-text.invisible@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Invisible: password hunter2-FAKE"
+  },
+  {
+    "id": "pdf.hidden-text.low-contrast@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Hidden note: team B budget cut 40% (FAKE)"
+  },
+  {
+    "id": "pdf.hidden-text.off-page@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Off-page: salary 99,999 FAKE"
+  },
+  {
+    "id": "pdf.hidden-text.tiny@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Tiny: account 0000-1234-FAKE"
+  },
+  {
+    "id": "pdf.hidden-text.transparent@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Transparent: client Bob Fictional"
+  },
+  {
+    "id": "pdf.hidden-text.under-image@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Under image: phone 555-0100 FAKE"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pdf.form.hidden-field@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "internal.notes = Client credit score 512 (FAKE)"
+  },
+  {
+    "id": "pdf.annotation.comment@p1#0",
+    "severity": "medium",
+    "page": 1,
+    "evidence": "Author: Jordan Example\nComment: Internal: we can go down to 9,000 if they push (FAKE)"
+  },
+  {
+    "id": "pdf.annotation.comment@p1#1",
+    "severity": "medium",
+    "page": 1,
+    "evidence": "Author: Riley Sample\nComment: Check with legal first\nMarked text: Fee: 12,000 per month, payable quarterly."
+  },
+  {
+    "id": "pdf.form.filled-field@p1#0",
+    "severity": "low",
+    "page": 1,
+    "evidence": "client.name = Morgan Fakename"
+  }
+]

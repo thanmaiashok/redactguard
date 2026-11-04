@@ -1,0 +1,7 @@
+node_modules/
+dist/
+fixtures/out/
+coverage/
+*.log
+.DS_Store
+scratch/

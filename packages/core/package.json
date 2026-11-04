@@ -1,0 +1,29 @@
+{
+  "name": "@redactguard/core",
+  "version": "0.0.0",
+  "description": "Check documents for hidden leaks before you share them. Offline. One command.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.12.0",
+    "pdfjs-dist": "6.5.438"
+  }
+}

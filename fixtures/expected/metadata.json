@@ -1,0 +1,47 @@
+[
+  {
+    "id": "pdf.metadata.author@p0#0",
+    "severity": "medium",
+    "evidence": "Info/Author, XMP/dc:creator: Jordan Example"
+  },
+  {
+    "id": "pdf.metadata.company@p0#0",
+    "severity": "medium",
+    "evidence": "Info/Company: Acme Fictional Ltd"
+  },
+  {
+    "id": "pdf.metadata.file-path@p0#0",
+    "severity": "medium",
+    "evidence": "C:\\Users\\jexample\\Documents\\HR\\Offer - Casey.docx"
+  },
+  {
+    "id": "pdf.metadata.file-path@p0#1",
+    "severity": "medium",
+    "evidence": "/Users/jexample/Shared/hr-private"
+  },
+  {
+    "id": "pdf.metadata.custom@p0#0",
+    "severity": "low",
+    "evidence": "Info/SourceFile: C:\\Users\\jexample\\Documents\\HR\\Offer - Casey.docx"
+  },
+  {
+    "id": "pdf.metadata.dates@p0#0",
+    "severity": "low",
+    "evidence": "Info/CreationDate, Info/ModDate: 2026-01-15T09:30:00.000Z\nXMP/xmp:createdate: 2026-01-15T09:30:00Z"
+  },
+  {
+    "id": "pdf.metadata.document-ids@p0#0",
+    "severity": "low",
+    "evidence": "XMP/xmpmm:documentid: uuid:00000000-1111-2222-3333-444444444444"
+  },
+  {
+    "id": "pdf.metadata.software@p0#0",
+    "severity": "low",
+    "evidence": "Info/Creator, XMP/xmp:creatortool: Microsoft Word for Microsoft 365\nInfo/Producer, XMP/pdf:producer: Fictional PDF Library 9.1"
+  },
+  {
+    "id": "pdf.metadata.title@p0#0",
+    "severity": "low",
+    "evidence": "Info/Title, XMP/dc:title: DRAFT v3 - offer for Casey Placeholder - do not send\nInfo/Subject: Compensation\nInfo/Keywords: internal hr\nXMP/pdf:keywords: /Users/jexample/Shared/hr-private"
+  }
+]
