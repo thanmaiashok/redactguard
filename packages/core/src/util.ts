@@ -90,6 +90,12 @@ export function truncate(s: string, n = 80): string {
 const PATH_RE =
   /(?:[A-Za-z]:\\[^\r\n"<>|]+|\\\\[\w.$-]+\\[^\r\n"<>|]+|file:\/\/\/?[^\s"<>]+|\/(?:Users|home|Volumes|mnt)\/[^\s"<>]+)/;
 
+/** Username in a home-folder path (C:\Users\name\…, /Users/name/…, /home/name/…), if any. */
+export function usernameFromPath(p: string): string | null {
+  const u = /(?:Users|home|Documents and Settings)[\\/]+([^\\/]+)/i.exec(p)?.[1];
+  return u && !/^(public|shared|default|all users)$/i.test(u) ? u : null;
+}
+
 export function findFilePath(s: string): string | null {
   const m = PATH_RE.exec(s);
   return m ? m[0].trim() : null;

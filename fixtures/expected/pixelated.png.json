@@ -1,0 +1,17 @@
+[
+  {
+    "id": "image.pixelation@p0#0",
+    "severity": "high",
+    "evidence": "Pixelated area at x=120, y=72, 216×18 px, block size 6 px (text roughly 13 px tall)"
+  },
+  {
+    "id": "image.author@p0#0",
+    "severity": "medium",
+    "evidence": "PNG text/Author: Jordan Example"
+  },
+  {
+    "id": "image.software@p0#0",
+    "severity": "low",
+    "evidence": "PNG text/Software: ScreenGrab 3 (FAKE)"
+  }
+]

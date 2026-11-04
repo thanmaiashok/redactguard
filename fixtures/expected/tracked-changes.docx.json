@@ -1,0 +1,157 @@
+[
+  {
+    "id": "docx.hidden-text.tiny@p0#0",
+    "severity": "high",
+    "evidence": "Tiny: ref 000-FAKE"
+  },
+  {
+    "id": "docx.hidden-text.vanish@p0#0",
+    "severity": "high",
+    "evidence": "Hidden: internal margin is 40% (FAKE)"
+  },
+  {
+    "id": "docx.hidden-text.vanish@p0#1",
+    "severity": "high",
+    "evidence": "Style-hidden: board vote 3-2 (FAKE)"
+  },
+  {
+    "id": "docx.hidden-text.vanish@p0#2",
+    "severity": "high",
+    "evidence": "Textbox note"
+  },
+  {
+    "id": "docx.hidden-text.white@p0#0",
+    "severity": "high",
+    "evidence": "White: competitor bid was 11,500 (FAKE)"
+  },
+  {
+    "id": "docx.tracked-deletion@p0#0",
+    "severity": "high",
+    "evidence": "12,000"
+  },
+  {
+    "id": "docx.tracked-deletion@p0#1",
+    "severity": "high",
+    "evidence": "Clause 9 removed: penalty waived for Fictional Corp (FAKE)"
+  },
+  {
+    "id": "image.gps@p0#0",
+    "severity": "high",
+    "evidence": "EXIF/GPS: 51.50070, -0.12460 (51.5007° N, 0.1246° W), altitude 12 m"
+  },
+  {
+    "id": "image.thumbnail-mismatch@p0#0",
+    "severity": "high",
+    "evidence": "Thumbnail 160×90 px, image 320×240 px: different shape (the picture was cropped)"
+  },
+  {
+    "id": "docx.comment@p0#0",
+    "severity": "medium",
+    "evidence": "Author: Riley Sample\nComment: Can we hide the late fee from them? (FAKE)\nOn text: Payment within 30 days."
+  },
+  {
+    "id": "docx.embedded-object@p0#0",
+    "severity": "medium",
+    "evidence": "word/embeddings/Microsoft_Excel_Worksheet.xlsx (2 KB)"
+  },
+  {
+    "id": "docx.file-path@p0#0",
+    "severity": "medium",
+    "evidence": "C:\\Users\\jexample\\Pictures\\signature.png"
+  },
+  {
+    "id": "docx.file-path@p0#1",
+    "severity": "medium",
+    "evidence": "file:///C:\\Users\\jexample\\AppData\\Roaming\\Microsoft\\Templates\\Contracts.dotm"
+  },
+  {
+    "id": "docx.file-path@p0#2",
+    "severity": "medium",
+    "evidence": "file:///\\\\fileserver\\hr\\salaries-2026.xlsx"
+  },
+  {
+    "id": "docx.metadata.author@p0#0",
+    "severity": "medium",
+    "evidence": "core/dc:creator: Jordan Example\ncore/cp:lastModifiedBy: Riley Sample"
+  },
+  {
+    "id": "docx.metadata.company@p0#0",
+    "severity": "medium",
+    "evidence": "app/Company: Acme Fictional Ltd\napp/Manager: Casey Placeholder\ncustom/ClientCode: FIC-0042\ncustom/Department: Legal"
+  },
+  {
+    "id": "docx.tracked-insertion@p0#0",
+    "severity": "medium",
+    "evidence": "15,000"
+  },
+  {
+    "id": "image.author@p0#0",
+    "severity": "medium",
+    "evidence": "EXIF/Artist, EXIF/OwnerName: Jordan Example"
+  },
+  {
+    "id": "image.camera-serial@p0#0",
+    "severity": "medium",
+    "evidence": "EXIF/SerialNumber: FAKE-SN-000123"
+  },
+  {
+    "id": "docx.custom-xml@p0#0",
+    "severity": "low",
+    "evidence": "customXml/item1.xml: Jordan Example · FIC-0042"
+  },
+  {
+    "id": "docx.document-variables@p0#0",
+    "severity": "low",
+    "evidence": "DealCode = PROJECT-OWL (FAKE)"
+  },
+  {
+    "id": "docx.metadata.dates@p0#0",
+    "severity": "low",
+    "evidence": "core/dcterms:created: 2026-01-05T09:00:00Z\ncore/dcterms:modified: 2026-01-12T14:05:00Z"
+  },
+  {
+    "id": "docx.metadata.edit-stats@p0#0",
+    "severity": "low",
+    "evidence": "core/cp:revision: 14\napp/TotalTime: 312 minutes of editing"
+  },
+  {
+    "id": "docx.metadata.software@p0#0",
+    "severity": "low",
+    "evidence": "app/Application: Microsoft Office Word\napp/AppVersion: 16.0000"
+  },
+  {
+    "id": "docx.metadata.template@p0#0",
+    "severity": "low",
+    "evidence": "app/Template: Contracts.dotm"
+  },
+  {
+    "id": "docx.metadata.title@p0#0",
+    "severity": "low",
+    "evidence": "core/dc:title: Contract DRAFT - internal only"
+  },
+  {
+    "id": "docx.tracked-formatting@p0#0",
+    "severity": "low",
+    "evidence": "1 tracked formatting change in word/document.xml"
+  },
+  {
+    "id": "image.dates@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/ModifyDate: 2026:01:15 09:30:00\nEXIF/DateTimeOriginal: 2026:01:15 09:29:58"
+  },
+  {
+    "id": "image.description@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/ImageDescription: Back garden, 12 Fictional Road"
+  },
+  {
+    "id": "image.device@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/Make: FictionalCam\nEXIF/Model: FC-100 (FAKE)\nEXIF/LensModel: Fictional 35mm"
+  },
+  {
+    "id": "image.software@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/Software: PhotoFixer 2.0 (FAKE)"
+  }
+]

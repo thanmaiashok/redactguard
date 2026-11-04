@@ -1,0 +1,42 @@
+[
+  {
+    "id": "image.gps@p0#0",
+    "severity": "high",
+    "evidence": "EXIF/GPS: 51.50070, -0.12460 (51.5007° N, 0.1246° W), altitude 12 m"
+  },
+  {
+    "id": "image.thumbnail-mismatch@p0#0",
+    "severity": "high",
+    "evidence": "Thumbnail 160×90 px, image 320×240 px: different shape (the picture was cropped)"
+  },
+  {
+    "id": "image.author@p0#0",
+    "severity": "medium",
+    "evidence": "EXIF/Artist, EXIF/OwnerName: Jordan Example"
+  },
+  {
+    "id": "image.camera-serial@p0#0",
+    "severity": "medium",
+    "evidence": "EXIF/SerialNumber: FAKE-SN-000123"
+  },
+  {
+    "id": "image.dates@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/ModifyDate: 2026:01:15 09:30:00\nEXIF/DateTimeOriginal: 2026:01:15 09:29:58"
+  },
+  {
+    "id": "image.description@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/ImageDescription: Back garden, 12 Fictional Road"
+  },
+  {
+    "id": "image.device@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/Make: FictionalCam\nEXIF/Model: FC-100 (FAKE)\nEXIF/LensModel: Fictional 35mm"
+  },
+  {
+    "id": "image.software@p0#0",
+    "severity": "low",
+    "evidence": "EXIF/Software: PhotoFixer 2.0 (FAKE)"
+  }
+]

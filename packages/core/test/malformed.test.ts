@@ -23,11 +23,13 @@ async function scanSafely(bytes: Uint8Array) {
     return 'ok';
   } catch (err) {
     expect(err).toBeInstanceOf(ScanError);
+    // INTERNAL means an unexpected exception slipped through a detector: that is a bug.
+    expect((err as ScanError).code, (err as Error).message).not.toBe('INTERNAL');
     return (err as ScanError).code;
   }
 }
 
-describe('malformed PDFs never crash', () => {
+describe('malformed files never crash', () => {
   it('garbage after a PDF header', async () => {
     const code = await scanSafely(new TextEncoder().encode('%PDF-1.7\n' + 'garbage '.repeat(50)));
     expect(['ok', 'MALFORMED']).toContain(code);
@@ -50,7 +52,7 @@ describe('malformed PDFs never crash', () => {
   it('random byte corruption (seeded)', async () => {
     const rand = mulberry32(1234);
     const names = Object.keys(FIXTURES);
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 60; i++) {
       const name = names[i % names.length]!;
       const bytes = new Uint8Array(readFileSync(path.join(FIXTURE_DIR, name)));
       const flips = 1 + Math.floor(rand() * 20);

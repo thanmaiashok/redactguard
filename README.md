@@ -26,7 +26,11 @@ pdf.js gets a custom data loader that reads fonts, cmaps and wasm only from loca
 - [x] **P2** The two hardest leaks
   - [x] [covered text](docs/pdf-covered-text.md): text under black or white boxes, thick bars, annotation boxes and boxes on scanned pages; checked per glyph
   - [x] [earlier versions](docs/pdf-revisions.md): deleted text, comments and old properties recovered from incremental updates
-- [ ] **P3** DOCX + image detectors
+- [x] **P3** Word and image detectors, plus attachments, JavaScript and images inside PDFs
+  - [x] DOCX: [tracked changes](docs/docx-tracked-changes.md), [comments](docs/docx-comments.md), [hidden text](docs/docx-hidden-text.md), [properties, paths and hidden parts](docs/docx-metadata.md)
+  - [x] Images: [GPS, serials, authors, AI prompts, thumbnails that differ](docs/image-metadata.md), [pixelation risk](docs/image-pixelation.md) (flag only, no reconstruction)
+  - [x] PDF: [attachments, JavaScript, images in pages](docs/pdf-embedded.md)
+  - [x] Zip-bomb limits, damaged-part handling, broader fuzzing, dependency-hygiene test
 - [ ] **P4** Cleaner + automatic re-scan
 - [ ] **P5** CLI polish, JSON/HTML reports, exit codes
 - [ ] **P6** SKILL.md, Claude plugin manifests, MCP server

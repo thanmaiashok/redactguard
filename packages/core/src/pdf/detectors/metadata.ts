@@ -1,5 +1,5 @@
 import type { Severity } from '../../types.js';
-import { FindingSink, findFilePath } from '../../util.js';
+import { FindingSink, findFilePath, usernameFromPath } from '../../util.js';
 import { parseXmp } from '../../xmp.js';
 import type { LoadedPdf } from '../load.js';
 
@@ -166,7 +166,7 @@ export async function detectMetadata(pdf: LoadedPdf, sink: FindingSink): Promise
     if (p) paths.set(p, [...(paths.get(p) ?? []), `${e.source}/${e.key}`]);
   }
   for (const [p, where] of paths) {
-    const user = /(?:Users|home)[\\/]+([^\\/]+)/i.exec(p)?.[1];
+    const user = usernameFromPath(p);
     sink.add({
       rule: 'pdf.metadata.file-path',
       detector: 'metadata',

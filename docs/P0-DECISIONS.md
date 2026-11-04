@@ -70,3 +70,9 @@ redactguard/
 ```
 
 Finding shape: `{ id, detector, severity: 'high'|'medium'|'low'|'info', page?, bbox?, evidence, summary, fix }`.
+
+## Added in P3
+
+- `piexifjs` 1.0.6 (MIT), **dev-only**: writes fake EXIF into test JPEGs. It is not shipped.
+- `pdf-lib` is now also a runtime dependency of core. It reads the original JPEG bytes inside PDFs (for EXIF) and will rebuild PDFs in P4.
+- `@napi-rs/canvas` decodes images for pixelation and thumbnail checks. It is loaded lazily: if it fails to load, scans still run and skip pixel checks with a warning.

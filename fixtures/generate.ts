@@ -26,6 +26,9 @@ import {
   type PDFPage,
 } from 'pdf-lib';
 
+import { cleanDocx, trackedChangesDocx } from './docx.js';
+import { cleanPng, drawFakeText, gpsJpeg, pixelatedPng } from './images.js';
+
 export const FIXTURE_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'out');
 
 const FIXED_DATE = new Date('2026-01-15T09:30:00Z');
@@ -42,14 +45,20 @@ function save(doc: PDFDocument): Promise<Uint8Array> {
   return doc.save({ useObjectStreams: false });
 }
 
+/** A flat block with letter-like shapes (no fonts, so it renders identically on every OS). */
 function pngBlock(w: number, h: number, label: string, bg = '#d9d9d9'): Buffer {
   const c = createCanvas(w, h);
   const ctx = c.getContext('2d');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = '#222222';
-  ctx.font = `${Math.round(h * 0.45)}px sans-serif`;
-  ctx.fillText(label, 8, h * 0.65);
+  drawFakeText(
+    ctx,
+    8,
+    Math.round(h * 0.25),
+    Math.min(w - 16, label.length * 9),
+    Math.round(h * 0.5),
+    label.length,
+  );
   return c.toBuffer('image/png');
 }
 
@@ -395,6 +404,28 @@ async function incrementalHistoryPdf() {
   );
 }
 
+/** Images, an attachment and JavaScript inside a PDF. */
+async function embeddedPdf() {
+  const { doc, page, font } = await newDoc();
+  page.drawText('Site report (synthetic test document)', { x: 50, y: 740, size: 14, font });
+  const jpg = await doc.embedJpg(gpsJpeg());
+  page.drawImage(jpg, { x: 50, y: 480, width: 240, height: 180 });
+  const png = await doc.embedPng(pixelatedPng());
+  page.drawImage(png, { x: 50, y: 200, width: 480, height: 200 });
+  await doc.attach(
+    new TextEncoder().encode('name,salary\nCasey Placeholder,87500\n'),
+    'salaries-FAKE.csv',
+    {
+      mimeType: 'text/csv',
+      description: 'Salary export (FAKE)',
+      creationDate: FIXED_DATE,
+      modificationDate: FIXED_DATE,
+    },
+  );
+  doc.addJavaScript('track', 'app.alert("Opened (FAKE)");');
+  return save(doc);
+}
+
 export const FIXTURES: Record<string, () => Promise<Uint8Array>> = {
   'clean.pdf': cleanPdf,
   'metadata.pdf': metadataPdf,
@@ -405,6 +436,12 @@ export const FIXTURES: Record<string, () => Promise<Uint8Array>> = {
   'black-box.pdf': blackBoxPdf,
   'incremental.pdf': incrementalPdf,
   'incremental-history.pdf': incrementalHistoryPdf,
+  'embedded.pdf': embeddedPdf,
+  'tracked-changes.docx': trackedChangesDocx,
+  'clean.docx': cleanDocx,
+  'gps.jpg': async () => gpsJpeg(),
+  'pixelated.png': async () => pixelatedPng(),
+  'clean.png': async () => cleanPng(),
 };
 
 export async function generateFixtures(outDir = FIXTURE_DIR): Promise<string[]> {

@@ -21,7 +21,7 @@ describe('golden findings', () => {
         ...(f.page ? { page: f.page } : {}),
         evidence: f.evidence,
       }));
-      const file = path.join(EXPECTED_DIR, name.replace(/\.[^.]+$/, '.json'));
+      const file = path.join(EXPECTED_DIR, `${name}.json`);
       if (UPDATE || (!existsSync(file) && !process.env.CI))
         writeFileSync(file, JSON.stringify(actual, null, 2) + '\n');
       expect(actual).toEqual(JSON.parse(readFileSync(file, 'utf8')));

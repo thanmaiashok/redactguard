@@ -1,0 +1,66 @@
+[
+  {
+    "id": "image.gps@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "EXIF/GPS: 51.50070, -0.12460 (51.5007° N, 0.1246° W), altitude 12 m"
+  },
+  {
+    "id": "image.pixelation@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Pixelated area at x=120, y=72, 216×18 px, block size 6 px (text roughly 13 px tall)"
+  },
+  {
+    "id": "image.thumbnail-mismatch@p1#0",
+    "severity": "high",
+    "page": 1,
+    "evidence": "Thumbnail 160×90 px, image 320×240 px: different shape (the picture was cropped)"
+  },
+  {
+    "id": "pdf.embedded-file@p0#0",
+    "severity": "medium",
+    "evidence": "salaries-FAKE.csv (1 KB) — Salary export (FAKE)"
+  },
+  {
+    "id": "pdf.javascript@p0#0",
+    "severity": "medium",
+    "evidence": "[document] app.alert(\"Opened (FAKE)\");"
+  },
+  {
+    "id": "image.author@p1#0",
+    "severity": "medium",
+    "page": 1,
+    "evidence": "EXIF/Artist, EXIF/OwnerName: Jordan Example"
+  },
+  {
+    "id": "image.camera-serial@p1#0",
+    "severity": "medium",
+    "page": 1,
+    "evidence": "EXIF/SerialNumber: FAKE-SN-000123"
+  },
+  {
+    "id": "image.dates@p1#0",
+    "severity": "low",
+    "page": 1,
+    "evidence": "EXIF/ModifyDate: 2026:01:15 09:30:00\nEXIF/DateTimeOriginal: 2026:01:15 09:29:58"
+  },
+  {
+    "id": "image.description@p1#0",
+    "severity": "low",
+    "page": 1,
+    "evidence": "EXIF/ImageDescription: Back garden, 12 Fictional Road"
+  },
+  {
+    "id": "image.device@p1#0",
+    "severity": "low",
+    "page": 1,
+    "evidence": "EXIF/Make: FictionalCam\nEXIF/Model: FC-100 (FAKE)\nEXIF/LensModel: Fictional 35mm"
+  },
+  {
+    "id": "image.software@p1#0",
+    "severity": "low",
+    "page": 1,
+    "evidence": "EXIF/Software: PhotoFixer 2.0 (FAKE)"
+  }
+]

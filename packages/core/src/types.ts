@@ -44,7 +44,7 @@ export interface ScanReport {
 export class ScanError extends Error {
   constructor(
     message: string,
-    readonly code: 'UNSUPPORTED' | 'MALFORMED' | 'ENCRYPTED' | 'IO',
+    readonly code: 'UNSUPPORTED' | 'MALFORMED' | 'ENCRYPTED' | 'IO' | 'INTERNAL',
     options?: { cause?: unknown },
   ) {
     super(message, options);

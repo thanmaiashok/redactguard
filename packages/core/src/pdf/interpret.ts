@@ -44,6 +44,10 @@ export interface Paint {
   /** A soft mask is active, so opacity is unknown. */
   softMask: boolean;
   annotation: string | null;
+  /** pdf.js object id for XObject images (look up in page.objs / commonObjs). */
+  imageId: string | null;
+  /** Decoded inline image data (BI … EI). */
+  inlineImage: unknown;
 }
 
 export interface PageModel {
@@ -207,6 +211,8 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
       blendNormal: gs.blendNormal,
       softMask: gs.softMask,
       annotation,
+      imageId: null,
+      inlineImage: null,
       ...extra,
     });
   };
@@ -366,9 +372,11 @@ export async function buildPageModel(pdf: LoadedPdf, page: PDFPageProxy): Promis
 
       // ---- images ----
       case OPS.paintImageXObject:
-      case OPS.paintInlineImageXObject:
       case OPS.paintImageXObjectRepeat:
-        addPaint('image', [0, 0, 1, 1], { color: null, alpha: gs.fillAlpha });
+        addPaint('image', [0, 0, 1, 1], { color: null, imageId: String(args[0]) });
+        break;
+      case OPS.paintInlineImageXObject:
+        addPaint('image', [0, 0, 1, 1], { color: null, inlineImage: args[0] });
         break;
       case OPS.paintImageMaskXObject:
       case OPS.paintSolidColorImageMask:

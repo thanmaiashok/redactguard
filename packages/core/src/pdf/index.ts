@@ -2,6 +2,13 @@ import type { ScanReport } from '../types.js';
 import { FindingSink, countSeverities, sortFindings } from '../util.js';
 import { detectAnnotations, loadAnnotations } from './detectors/annotations.js';
 import { detectCoveredText } from './detectors/covered-text.js';
+import {
+  detectAnnotationAttachments,
+  detectAttachments,
+  detectJavaScript,
+  pageScripts,
+} from './detectors/embedded.js';
+import { RawStreams, detectPdfImages } from './detectors/images.js';
 import { detectRevisions } from './detectors/revisions.js';
 import { detectHiddenText } from './detectors/hidden-text.js';
 import { detectMetadata } from './detectors/metadata.js';
@@ -14,8 +21,12 @@ export async function scanPdf(bytes: Uint8Array, file: string): Promise<ScanRepo
   const sink = new FindingSink();
   const warnings: string[] = [];
   const ocrPages: number[] = [];
+  const raw = new RawStreams(pdf.bytes);
+  const seenImages = new Set<string>();
+  const scripts: { page: number; code: string }[] = [];
   try {
     await detectMetadata(pdf, sink);
+    await detectAttachments(pdf.doc, sink, warnings);
     for (let n = 1; n <= pdf.doc.numPages; n++) {
       try {
         const page = await pdf.doc.getPage(n);
@@ -28,6 +39,9 @@ export async function scanPdf(bytes: Uint8Array, file: string): Promise<ScanRepo
         const { coveredRuns } = detectCoveredText(model, sink, redactIds);
         if (detectHiddenText(model, sink, coveredRuns).ocrLayer) ocrPages.push(n);
         detectAnnotations(annots, model, sink);
+        await detectAnnotationAttachments(annots, n, sink, warnings);
+        scripts.push(...(await pageScripts(page, annots)));
+        await detectPdfImages(page, model, raw, seenImages, sink, warnings);
         page.cleanup();
       } catch (err) {
         warnings.push(
@@ -35,6 +49,7 @@ export async function scanPdf(bytes: Uint8Array, file: string): Promise<ScanRepo
         );
       }
     }
+    await detectJavaScript(pdf.doc, scripts, sink);
     try {
       await detectRevisions(pdf, sink, warnings);
     } catch (err) {
